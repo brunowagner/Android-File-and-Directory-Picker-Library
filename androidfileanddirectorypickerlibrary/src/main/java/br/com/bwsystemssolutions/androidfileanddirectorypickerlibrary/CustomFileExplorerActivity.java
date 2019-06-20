@@ -36,6 +36,8 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     private String m_curDir;
     private MyListAdapter m_listAdapter;
     private ListView m_RootList;
+    private String m_root = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +46,12 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
 
         m_RootList = findViewById(R.id.lv_lvListRoot);
 
+        m_root = getExternalFilesDir(null).getAbsolutePath();
+
         getDirFromRoot(m_root);
+
     }
 
-    private String m_root=Environment.getExternalStorageDirectory().getPath();
 
     //get directories and files from selected path
     public void getDirFromRoot(String p_rootPath)
@@ -67,19 +71,19 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
         }
         m_curDir=p_rootPath;
         //sorting file list in alphabetical order
-        Arrays.sort(m_filesArray);
-        for(int i=0; i < m_filesArray.length; i++)
-        {
-            File file = m_filesArray[i];
-            if(file.isDirectory())
-            {
-                m_item.add(file.getName());
-                m_path.add(file.getPath());
-            }
-            else
-            {
-                m_files.add(file.getName());
-                m_filesPath.add(file.getPath());
+
+        if (m_filesArray != null) {
+            Arrays.sort(m_filesArray);
+
+            for (int i = 0; i < m_filesArray.length; i++) {
+                File file = m_filesArray[i];
+                if (file.isDirectory()) {
+                    m_item.add(file.getName());
+                    m_path.add(file.getPath());
+                } else {
+                    m_files.add(file.getName());
+                    m_filesPath.add(file.getPath());
+                }
             }
         }
         for(String m_AddFile:m_files)
