@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -29,6 +30,8 @@ import br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary.adapter.My
 
 public class CustomFileExplorerActivity extends AppCompatActivity {
 
+    public static final String TITLE_STRING_NAME = "title";
+
     private ArrayList<String> m_item;
     private ArrayList<String> m_path;
     private ArrayList<String> m_files;
@@ -38,6 +41,7 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     private ListView m_RootList;
     private String m_root = "";
 
+    private String m_title = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +52,19 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
 
         m_root = getExternalFilesDir(null).getAbsolutePath();
 
-        getDirFromRoot(m_root);
+        init();
+    }
 
+
+    private void init(){
+        if (getIntent().hasExtra(TITLE_STRING_NAME)){
+            m_title = getIntent().getStringExtra(TITLE_STRING_NAME);
+        }
+        if (m_title.length() > 0) {
+            setTitle(m_title);
+        }
+
+        getDirFromRoot(m_root);
     }
 
 

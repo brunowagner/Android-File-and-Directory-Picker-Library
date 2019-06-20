@@ -26,9 +26,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showFileExplorer(){
-        CustomFileExplorerActivity fileExplorer = new CustomFileExplorerActivity();
-
         Intent intent = new Intent(MainActivity.this, CustomFileExplorerActivity.class);
+        intent.putExtra(CustomFileExplorerActivity.TITLE_STRING_NAME, "Selecione o arquivo");
         startActivity(intent);
 
     }
