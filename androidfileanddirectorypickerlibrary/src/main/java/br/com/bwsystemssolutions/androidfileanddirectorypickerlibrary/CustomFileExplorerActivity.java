@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary.adapter.MyListAdapter;
+
 public class CustomFileExplorerActivity extends AppCompatActivity {
 
     private ArrayList<String> m_item;
