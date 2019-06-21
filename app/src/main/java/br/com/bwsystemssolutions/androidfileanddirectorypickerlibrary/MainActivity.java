@@ -8,27 +8,33 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button fileExplorerButtom;
+    Button pickerByActivityButtom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fileExplorerButtom = (Button) findViewById(R.id.btn_fileExplorer);
-        fileExplorerButtom.setOnClickListener(new View.OnClickListener() {
+        pickerByActivityButtom = (Button) findViewById(R.id.btn_picker_by_activity);
+        pickerByActivityButtom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showFileExplorer();
+                showPickerByActivity();
             }
         });
-
     }
 
-    public void showFileExplorer(){
+    public void showPickerByActivity(){
         Intent intent = new Intent(MainActivity.this, CustomFileExplorerActivity.class);
         intent.putExtra(CustomFileExplorerActivity.TITLE_STRING_NAME, "Selecione o arquivo");
         startActivity(intent);
 
     }
+
+    public void showPickerByDialog(){
+        //
+    }
+
+
+
 }
