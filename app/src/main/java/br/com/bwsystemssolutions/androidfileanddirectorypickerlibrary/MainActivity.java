@@ -1,6 +1,7 @@
 package br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +23,14 @@ public class MainActivity extends AppCompatActivity {
                 showPickerByActivity();
             }
         });
+
+        pickerByActivityButtom = (Button) findViewById(R.id.btn_picker_by_dialog);
+        pickerByActivityButtom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPickerByDialog();
+            }
+        });
     }
 
     public void showPickerByActivity(){
@@ -32,7 +41,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showPickerByDialog(){
-        //
+
+        String root = getExternalFilesDir(null).getAbsolutePath();
+        PickerByDialog pickerByDialog = new PickerByDialog(this, root);
+        pickerByDialog.setTitle("Selecione o Arquivo:");
+        pickerByDialog.setSubTitle("Navegue pelas pastas abaixo:");
+        pickerByDialog.show();
     }
 
 

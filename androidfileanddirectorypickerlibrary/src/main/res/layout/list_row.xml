@@ -12,11 +12,12 @@
         android:text="teste"
         android:visibility="gone"/>
 
-    <ListView
-        android:id="@+id/lv_lvListRoot"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </ListView>
-
+        <ListView
+            android:layout_marginTop="10sp"
+            android:id="@+id/lv_lvListRoot"
+            android:layout_width="match_parent"
+            android:layout_height="3600dp"
+            android:layout_weight="1">
+        </ListView>
 </LinearLayout>
 
