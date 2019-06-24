@@ -1,5 +1,7 @@
 package br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary.adapter;
 
+import android.graphics.Color;
+import android.util.Log;
 import android.widget.BaseAdapter;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -27,6 +29,11 @@ public class MyListAdapter extends BaseAdapter {
     public ArrayList<Integer> m_selectedItem;
     Context m_context;
     Boolean m_isRoot;
+
+    private int m_itemBackgroundColor;
+    private int m_selectedItemBackgroundColor;
+
+
 
     public MyListAdapter(Context p_context, List<String> p_item, List<String> p_path, Boolean p_isRoot) {
         m_context=p_context;
@@ -95,6 +102,17 @@ public class MyListAdapter extends BaseAdapter {
                 }
             }
         });
+
+        if (m_selectedItem.contains(p_position)){
+            Log.d("bwvm", "getView: cor" + m_selectedItemBackgroundColor);
+            //if (m_selectedItemBackgroundColor < 0 )  m_view.setBackgroundColor(m_selectedItemBackgroundColor);
+            m_view.setBackgroundColor(m_selectedItemBackgroundColor);
+        } else {
+            Log.d("bwvm", "getView: cor" + m_selectedItemBackgroundColor);
+            //if (m_itemBackgroundColor < 0 )  m_view.setBackgroundColor(m_itemBackgroundColor);
+            m_view.setBackgroundColor(m_itemBackgroundColor);
+        }
+
         return m_view;
     }
 
@@ -136,4 +154,8 @@ public class MyListAdapter extends BaseAdapter {
         return m_dateFormat.format(m_file.lastModified());
     }
 
+    public void setItemBackgroundColor(int defaultColor, int selectedColor) {
+        this.m_itemBackgroundColor = defaultColor;
+        this.m_selectedItemBackgroundColor = selectedColor;
+    }
 }

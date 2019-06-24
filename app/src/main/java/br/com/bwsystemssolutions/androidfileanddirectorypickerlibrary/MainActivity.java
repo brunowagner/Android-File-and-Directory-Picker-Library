@@ -1,6 +1,7 @@
 package br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         PickerByDialog pickerByDialog = new PickerByDialog(this, root);
         pickerByDialog.setTitle("Selecione o Arquivo:");
         pickerByDialog.setSubTitle("Navegue pelas pastas abaixo:");
+        pickerByDialog.setItemBackgroundColor(getResources().getColor(R.color.defaulBackgroudColor),getResources().getColor(R.color.selectedBackgroudColor));
+
         pickerByDialog.show();
     }
 

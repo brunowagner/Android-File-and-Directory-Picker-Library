@@ -42,6 +42,8 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
 
     private String m_title = "";
     private String m_subTilte = "";
+    private int m_itemBackgroundColor;
+    private int m_selectedItemBackgroundColor;
 
     public PickerByDialog(Context context, String root){
         mContext = context;
@@ -148,7 +150,9 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
 
     private void configureAdapter (){
         m_listAdapter=new MyListAdapter(mContext,m_item,m_path,m_isRoot);
+        m_listAdapter.setItemBackgroundColor(m_itemBackgroundColor, m_selectedItemBackgroundColor);
         m_RootList.setAdapter(m_listAdapter);
+
         m_RootList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -162,6 +166,9 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
                 else
                 {
                     Toast.makeText(mContext, "This is File", Toast.LENGTH_SHORT).show();
+                    m_listAdapter.m_selectedItem.clear();
+                    m_listAdapter.m_selectedItem.add(position);
+                    m_listAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -202,5 +209,10 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
 
     private void newFolder(){
         Toast.makeText(mContext,"Botão de 'Nova Pasta' foi clicado!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void setItemBackgroundColor(int defaultColor, int selectedColor) {
+        this.m_itemBackgroundColor = defaultColor;
+        this.m_selectedItemBackgroundColor = selectedColor;
     }
 }
