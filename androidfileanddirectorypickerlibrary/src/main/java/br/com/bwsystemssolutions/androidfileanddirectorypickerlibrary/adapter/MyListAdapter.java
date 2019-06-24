@@ -104,12 +104,8 @@ public class MyListAdapter extends BaseAdapter {
         });
 
         if (m_selectedItem.contains(p_position)){
-            Log.d("bwvm", "getView: cor" + m_selectedItemBackgroundColor);
-            //if (m_selectedItemBackgroundColor < 0 )  m_view.setBackgroundColor(m_selectedItemBackgroundColor);
             m_view.setBackgroundColor(m_selectedItemBackgroundColor);
         } else {
-            Log.d("bwvm", "getView: cor" + m_selectedItemBackgroundColor);
-            //if (m_itemBackgroundColor < 0 )  m_view.setBackgroundColor(m_itemBackgroundColor);
             m_view.setBackgroundColor(m_itemBackgroundColor);
         }
 

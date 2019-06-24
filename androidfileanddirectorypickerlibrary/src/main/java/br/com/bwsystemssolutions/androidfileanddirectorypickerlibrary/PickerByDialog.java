@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.XmlResourceParser;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -166,8 +167,14 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
                 else
                 {
                     Toast.makeText(mContext, "This is File", Toast.LENGTH_SHORT).show();
-                    m_listAdapter.m_selectedItem.clear();
-                    m_listAdapter.m_selectedItem.add(position);
+                    Log.d("bwvm", "onItemClick: position" + position);
+
+                    if (m_listAdapter.m_selectedItem.contains(position) ) {
+                        m_listAdapter.m_selectedItem.clear();
+                    } else {
+                        m_listAdapter.m_selectedItem.clear();
+                        m_listAdapter.m_selectedItem.add(0, position);
+                    }
                     m_listAdapter.notifyDataSetChanged();
                 }
             }
