@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         pickerByDialog.setTitle("Selecione o Arquivo:");
         pickerByDialog.setSubTitle("Navegue pelas pastas abaixo:");
         pickerByDialog.setItemBackgroundColor(getResources().getColor(R.color.defaulBackgroudColor),getResources().getColor(R.color.selectedBackgroudColor));
+        pickerByDialog.setSelectType(PickerByDialog.SELECT_TYPE_ANY);
         pickerByDialog.setOnResponseListener(new PickerByDialog.OnResponseListener() {
             @Override
             public void onResponse(boolean canceled, String response) {

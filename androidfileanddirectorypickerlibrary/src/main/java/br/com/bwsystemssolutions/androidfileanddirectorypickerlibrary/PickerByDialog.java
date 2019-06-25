@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,12 +25,15 @@ import java.util.Arrays;
 
 import br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary.adapter.MyListAdapter;
 
-public class PickerByDialog implements DialogInterface.OnClickListener {
+public class PickerByDialog implements DialogInterface.OnClickListener, DialogInterface.OnShowListener {
 
     private Context mContext;
     private int mthemeResId;
 
     public static final String TITLE_STRING_NAME = "title";
+    public static final int SELECT_TYPE_FOLDER = 0;
+    public static final int SELECT_TYPE_FILE = 1;
+    public static final int SELECT_TYPE_ANY = 2;
 
     private ArrayList<String> m_item;
     private ArrayList<String> m_path;
@@ -46,6 +50,8 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
     private int m_itemBackgroundColor;
     private int m_selectedItemBackgroundColor;
     private OnResponseListener m_onResponseListener;
+    private int selectType = SELECT_TYPE_FOLDER;
+
 
     public PickerByDialog(Context context, String root){
         mContext = context;
@@ -74,7 +80,8 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
 
         dialogBuilder.setPositiveButton("Selecionar", this);
         dialogBuilder.setNegativeButton("Cancelar", this);
-        dialogBuilder.setNeutralButton("Nova Pasta", this);
+        //dialogBuilder.setNeutralButton("Nova Pasta", this);
+        dialogBuilder.setNeutralButton("Nova Pasta", null);
 
         if (m_title.length()>0) dialogBuilder.setTitle(m_title);
 
@@ -97,6 +104,7 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
         dialogBuilder.setView(view);
 
         AlertDialog dialog = dialogBuilder.create();
+        dialog.setOnShowListener(this);
 
         dialog.show();
 
@@ -134,8 +142,10 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
                     m_item.add(file.getName());
                     m_path.add(file.getPath());
                 } else {
-                    m_files.add(file.getName());
-                    m_filesPath.add(file.getPath());
+                    if (selectType == SELECT_TYPE_ANY || selectType == SELECT_TYPE_FILE) {
+                        m_files.add(file.getName());
+                        m_filesPath.add(file.getPath());
+                    }
                 }
             }
         }
@@ -198,18 +208,49 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
                 cancel();
                 dialog.cancel();
                 dialog.dismiss();
-                break;
-
-            case DialogInterface.BUTTON_NEUTRAL:
-                newFolder();
-                dialog.dismiss();
+//                break;
+//
+//            case DialogInterface.BUTTON_NEUTRAL:
+//                newFolder();
+//                dialog.dismiss();
         }
         Log.d("bwvm", "onClick:  final do on click");
     }
 
     private void select(){
-        String response = m_path.get(m_listAdapter.m_selectedItem.get(0));
-        m_onResponseListener.onResponse(false, response);
+        String response = "";
+        switch (selectType){
+            case SELECT_TYPE_FOLDER:
+                response = m_curDir;
+                m_onResponseListener.onResponse(false, response);
+                break;
+
+            case SELECT_TYPE_FILE:
+                if (m_listAdapter.m_selectedItem.size() == 0) {
+                    m_onResponseListener.onResponse(false, response);
+                    return;
+                }
+                response = m_path.get(m_listAdapter.m_selectedItem.get(0));
+                m_onResponseListener.onResponse(false, response);
+                break;
+
+
+            case SELECT_TYPE_ANY:
+                if (m_listAdapter.m_selectedItem.size() == 0) {
+                    m_onResponseListener.onResponse(false, m_curDir);
+                } else {
+                    response = m_path.get(m_listAdapter.m_selectedItem.get(0));
+                    m_onResponseListener.onResponse(false, response);
+                }
+                break;
+
+                default:
+        }
+
+
+
+
+
     }
 
     private void cancel(){
@@ -300,7 +341,26 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
         this.m_onResponseListener = onResponseListener;
     }
 
+    public void setSelectType (int pickerSelectType){
+        this.selectType = pickerSelectType;
+    }
+
+    @Override
+    public void onShow(DialogInterface dialog) {
+
+        AlertDialog alertDialog = (AlertDialog) dialog;
+
+        Button button = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newFolder();
+            }
+        });
+    }
+
     interface OnResponseListener {
         void onResponse(boolean canceled, String response);
     }
+
 }
