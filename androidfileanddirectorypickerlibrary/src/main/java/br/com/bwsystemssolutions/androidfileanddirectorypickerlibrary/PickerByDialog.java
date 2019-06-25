@@ -1,24 +1,24 @@
 package br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.XmlResourceParser;
+import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -45,6 +45,7 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
     private String m_subTilte = "";
     private int m_itemBackgroundColor;
     private int m_selectedItemBackgroundColor;
+    private OnResponseListener m_onResponseListener;
 
     public PickerByDialog(Context context, String root){
         mContext = context;
@@ -167,13 +168,13 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
                 else
                 {
                     Toast.makeText(mContext, "This is File", Toast.LENGTH_SHORT).show();
-                    Log.d("bwvm", "onItemClick: position" + position);
-
                     if (m_listAdapter.m_selectedItem.contains(position) ) {
                         m_listAdapter.m_selectedItem.clear();
                     } else {
                         m_listAdapter.m_selectedItem.clear();
                         m_listAdapter.m_selectedItem.add(0, position);
+                        Log.d("bwvm", "onItemClick: m_item = " + m_item.get(position));
+                        Log.d("bwvm", "onItemClick: m_path = " + m_path.get(position));
                     }
                     m_listAdapter.notifyDataSetChanged();
                 }
@@ -201,25 +202,105 @@ public class PickerByDialog implements DialogInterface.OnClickListener {
 
             case DialogInterface.BUTTON_NEUTRAL:
                 newFolder();
-                dialog.cancel();
                 dialog.dismiss();
         }
+        Log.d("bwvm", "onClick:  final do on click");
     }
 
     private void select(){
-        Toast.makeText(mContext,"Botão de 'seleção' foi clicado!", Toast.LENGTH_SHORT).show();
+        String response = m_path.get(m_listAdapter.m_selectedItem.get(0));
+        m_onResponseListener.onResponse(false, response);
     }
 
     private void cancel(){
-        Toast.makeText(mContext,"Botão de 'cancelamento' foi clicado!", Toast.LENGTH_SHORT).show();
+        m_onResponseListener.onResponse(true, "");
     }
 
     private void newFolder(){
         Toast.makeText(mContext,"Botão de 'Nova Pasta' foi clicado!", Toast.LENGTH_SHORT).show();
+        createNewFolder();
     }
+
+
+    private void createNewFile (){
+        create(0);
+    }
+
+    private void createNewFolder (){
+        create(1);
+    }
+
+    private void create( final int p_opt)
+    {
+        Log.d("bwvm", "create: inicio do on create");
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Title");
+
+        // Set up the input
+        final EditText m_edtinput = new EditText(mContext);
+        // Specify the type of input expected;
+        m_edtinput.setInputType(InputType.TYPE_CLASS_TEXT);
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String m_text = m_edtinput.getText().toString();
+                if(p_opt == 1)
+                {
+                    File m_newPath=new File(m_curDir,m_text);
+                    Log.d("cur dir",m_curDir);
+                    Log.d("bwvm", "onClick: " + m_curDir);
+                    if(!m_newPath.exists()) {
+                        m_newPath.mkdirs();
+                    }
+                }
+                else
+                {
+                    try {
+                        FileOutputStream m_Output = new FileOutputStream((m_curDir+File.separator+m_text), false);
+                        m_Output.close();
+                        //  <!--<intent-filter>
+                        //  <action android:name="android.intent.action.SEARCH" />
+                        //  </intent-filter>
+                        //  <meta-data android:name="android.app.searchable"
+                        //  android:resource="@xml/searchable"/>-->
+
+                    } catch (FileNotFoundException e)
+                    {
+                        e.printStackTrace();
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                getDirFromRoot(m_curDir);
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.setView(m_edtinput);
+        builder.show();
+    }
+
+
+
 
     public void setItemBackgroundColor(int defaultColor, int selectedColor) {
         this.m_itemBackgroundColor = defaultColor;
         this.m_selectedItemBackgroundColor = selectedColor;
+    }
+
+    public void setOnResponseListener(OnResponseListener onResponseListener){
+        this.m_onResponseListener = onResponseListener;
+    }
+
+    interface OnResponseListener {
+        void onResponse(boolean canceled, String response);
     }
 }

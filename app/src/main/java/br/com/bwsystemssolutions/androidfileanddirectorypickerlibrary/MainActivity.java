@@ -1,12 +1,11 @@
 package br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
         pickerByDialog.setTitle("Selecione o Arquivo:");
         pickerByDialog.setSubTitle("Navegue pelas pastas abaixo:");
         pickerByDialog.setItemBackgroundColor(getResources().getColor(R.color.defaulBackgroudColor),getResources().getColor(R.color.selectedBackgroudColor));
+        pickerByDialog.setOnResponseListener(new PickerByDialog.OnResponseListener() {
+            @Override
+            public void onResponse(boolean canceled, String response) {
+                if (canceled){
+                    Toast.makeText(MainActivity.this, "Foi cancelado!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
 
         pickerByDialog.show();
     }
