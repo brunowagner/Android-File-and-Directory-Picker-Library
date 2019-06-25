@@ -31,6 +31,14 @@ import br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary.adapter.My
 public class CustomFileExplorerActivity extends AppCompatActivity {
 
     public static final String TITLE_STRING_NAME = "title";
+    public static final String SUBTITLE_STRING_NAME = "subtitle";
+    public static final String ITEM_DEFAULT_BACKGROUND_COLOR = "itemDefaultBackgroundColor";
+    public static final String ITEM_SELECTED_BACKGROUND_COLOR = "itemSelectedBackgroundColor";
+    public static final String SELECT_TYPE = "selectType";
+    public static final int SELECT_TYPE_FOLDER = 0;
+    public static final int SELECT_TYPE_FILE = 1;
+    public static final int SELECT_TYPE_ANY = 2;
+    public static final String RESPONSE = "response";
 
     private ArrayList<String> m_item;
     private ArrayList<String> m_path;
@@ -42,6 +50,10 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     private String m_root = "";
 
     private String m_title = "";
+    private String m_subTitle = "";
+    private int m_itemBackgroundColor;
+    private int m_selectedItemBackgroundColor;
+    private int m_selectType = SELECT_TYPE_FOLDER;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +69,33 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
 
 
     private void init(){
+        //   set title
         if (getIntent().hasExtra(TITLE_STRING_NAME)){
             m_title = getIntent().getStringExtra(TITLE_STRING_NAME);
         }
         if (m_title.length() > 0) {
             setTitle(m_title);
+        }
+        
+        //  set subTitle
+         if (getIntent().hasExtra(SUBTITLE_STRING_NAME)){
+            m_subTitle = getIntent().getStringExtra(SUBTITLE_STRING_NAME);
+        }
+        if (m_subTitle.length() > 0) {
+            setTitle(m_title);
+        }
+        
+        //  set Color
+        if (getIntent().hasExtra(ITEM_DEFAULT_BACKGROUND_COLOR)){
+            m_itemBackgroundColor = getIntent().getStringExtra(ITEM_DEFAULT_BACKGROUND_COLOR);
+        }
+        if (getIntent().hasExtra(ITEM_DEFAULT_BACKGROUND_COLOR)){
+            m_selectedItemBackgroundColor = getIntent().getStringExtra(ITEM_SELECTED_BACKGROUND_COLOR);
+        }
+        
+        //  set selectType
+        if (getIntent().hasExtra(SELECT_TYPE)){
+            m_selectType = getIntent().getStringExtra(SELECT_TYPE);
         }
 
         getDirFromRoot(m_root);
