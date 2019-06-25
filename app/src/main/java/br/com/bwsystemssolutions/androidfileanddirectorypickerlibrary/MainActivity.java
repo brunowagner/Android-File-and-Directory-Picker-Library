@@ -10,6 +10,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     Button pickerByActivityButtom;
+    static final int PICK_RESPONSE_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,9 +37,26 @@ public class MainActivity extends AppCompatActivity {
     public void showPickerByActivity(){
         Intent intent = new Intent(MainActivity.this, CustomFileExplorerActivity.class);
         intent.putExtra(CustomFileExplorerActivity.TITLE_STRING_NAME, "Selecione o arquivo");
-        startActivity(intent);
-
+        intent.putExtra(CustomFileExplorerActivity.SUBTITLE_STRING_NAME, "Navegue pelas pastas abaixo:");
+        intent.putExtra(CustomFileExplorerActivity.ITEM_DEFAULT_BACKGROUND_COLOR, getResources().getColor(R.color.defaulBackgroudColor));
+        intent.putExtra(CustomFileExplorerActivity.ITEM_SELECTED_BACKGROUND_COLOR, getResources().getColor(R.color.selectedBackgroudColor));
+        intent.putExtra(CustomFileExplorerActivity.SELECT_TYPE, CustomFileExplorerActivity.SELECT_TYPE_ANY);
+        startActivityForResult(intent, PICK_RESPONSE_CODE);
     }
+    
+    @override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_RESPONSE_CODE) {
+            if(resultCode == RESULT_SELECT){
+                String path = data.getStringExtra(CustomFileExplorerActivity.RESPONSE);
+                Toast.makeText(MainActivity.this, path, Toast.LENGTH_LONG).show();
+            } else if(resultCode == RESULT_CANCEL){
+                Toast.makeText(MainActivity.this, "Foi cancelado!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+    
+    
 
     public void showPickerByDialog(){
 
@@ -55,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Foi cancelado!", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(MainActivity.this, response, Toast.LENGTH_LONG).show();
-
                 }
             }
         });
