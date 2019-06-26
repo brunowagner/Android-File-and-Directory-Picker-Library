@@ -1,22 +1,18 @@
 package br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -32,13 +28,17 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
 
     public static final String TITLE_STRING_NAME = "title";
     public static final String SUBTITLE_STRING_NAME = "subtitle";
-    public static final String ITEM_DEFAULT_BACKGROUND_COLOR = "itemDefaultBackgroundColor";
-    public static final String ITEM_SELECTED_BACKGROUND_COLOR = "itemSelectedBackgroundColor";
-    public static final String SELECT_TYPE = "selectType";
+    public static final String ITEM_DEFAULT_BACKGROUND_COLOR_STRING_NAME = "itemDefaultBackgroundColor";
+    public static final String ITEM_SELECTED_BACKGROUND_COLOR_STRING_NAME = "itemSelectedBackgroundColor";
+    public static final String SELECT_TYPE_STRING_NAME = "selectType";
+    public static final String SELECT_BUTTON_TITLE_STRING_NAME = "selectButtonTitle";
+    public static final String NEW_FOLDER_BUTTON_TITLE_STRING_NAME = "newFolderButtonTitle";
+    public static final String CANCEL_BUTTON_TITLE_STRING_NAME = "cancelButtonTitle";
+    public static final String INPUT_NEW_FOLDER_TITLE_STRING_NAME = "inputNewFolderTitle";
     public static final int SELECT_TYPE_FOLDER = 0;
     public static final int SELECT_TYPE_FILE = 1;
     public static final int SELECT_TYPE_ANY = 2;
-    public static final String RESPONSE = "response";
+    public static final String RESPONSE_STRING_NAME = "response";
 
     private ArrayList<String> m_item;
     private ArrayList<String> m_path;
@@ -48,12 +48,17 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     private MyListAdapter m_listAdapter;
     private ListView m_RootList;
     private String m_root = "";
+    private Boolean m_isRoot=true;
 
     private String m_title = "";
     private String m_subTitle = "";
     private int m_itemBackgroundColor;
     private int m_selectedItemBackgroundColor;
     private int m_selectType = SELECT_TYPE_FOLDER;
+    private String m_selectButtonTitle = "Select";
+    private String m_newFolderButtonTitle = "New Folder";
+    private String m_cancelButtonTitle = "Cancel";
+    private String m_inputNewFolderTitle = "New folder name:";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,23 +87,42 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
             m_subTitle = getIntent().getStringExtra(SUBTITLE_STRING_NAME);
         }
         if (m_subTitle.length() > 0) {
-            setTitle(m_title);
+            setSubTitle(m_subTitle);
         }
         
         //  set Color
-        if (getIntent().hasExtra(ITEM_DEFAULT_BACKGROUND_COLOR)){
-            m_itemBackgroundColor = getIntent().getStringExtra(ITEM_DEFAULT_BACKGROUND_COLOR);
+        if (getIntent().hasExtra(ITEM_DEFAULT_BACKGROUND_COLOR_STRING_NAME)){
+            m_itemBackgroundColor = getIntent().getIntExtra(ITEM_DEFAULT_BACKGROUND_COLOR_STRING_NAME, 0);
         }
-        if (getIntent().hasExtra(ITEM_DEFAULT_BACKGROUND_COLOR)){
-            m_selectedItemBackgroundColor = getIntent().getStringExtra(ITEM_SELECTED_BACKGROUND_COLOR);
+        if (getIntent().hasExtra(ITEM_DEFAULT_BACKGROUND_COLOR_STRING_NAME)){
+            m_selectedItemBackgroundColor = getIntent().getIntExtra(ITEM_SELECTED_BACKGROUND_COLOR_STRING_NAME, 0);
         }
         
         //  set selectType
-        if (getIntent().hasExtra(SELECT_TYPE)){
-            m_selectType = getIntent().getStringExtra(SELECT_TYPE);
+        if (getIntent().hasExtra(SELECT_TYPE_STRING_NAME)){
+            m_selectType = getIntent().getIntExtra(SELECT_TYPE_STRING_NAME,0);
+        }
+
+        //  set select button title
+        if (getIntent().hasExtra(SELECT_BUTTON_TITLE_STRING_NAME)){
+            m_selectButtonTitle = getIntent().getStringExtra(SELECT_BUTTON_TITLE_STRING_NAME);
+        }
+
+        //  set new folder button title
+        if (getIntent().hasExtra(NEW_FOLDER_BUTTON_TITLE_STRING_NAME)){
+            m_newFolderButtonTitle = getIntent().getStringExtra(NEW_FOLDER_BUTTON_TITLE_STRING_NAME);
+        }
+
+        //  set input new folder title
+        if (getIntent().hasExtra(INPUT_NEW_FOLDER_TITLE_STRING_NAME)){
+            m_inputNewFolderTitle = getIntent().getStringExtra(INPUT_NEW_FOLDER_TITLE_STRING_NAME);
         }
 
         getDirFromRoot(m_root);
+    }
+
+    public void setSubTitle(String subTitle){
+        m_subTitle = subTitle;
     }
 
 
@@ -106,7 +130,7 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     public void getDirFromRoot(String p_rootPath)
     {
         m_item = new ArrayList<String>();
-        Boolean m_isRoot=true;
+
         m_path = new ArrayList<String>();
         m_files = new ArrayList<String>();
         m_filesPath=new ArrayList<String>();
@@ -130,8 +154,10 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
                     m_item.add(file.getName());
                     m_path.add(file.getPath());
                 } else {
-                    m_files.add(file.getName());
-                    m_filesPath.add(file.getPath());
+                    if (m_selectType == SELECT_TYPE_ANY || m_selectType == SELECT_TYPE_FILE) {
+                        m_files.add(file.getName());
+                        m_filesPath.add(file.getPath());
+                    }
                 }
             }
         }
@@ -143,8 +169,15 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
         {
             m_path.add(m_AddPath);
         }
+        configureAdapter();
+
+    }
+
+    private void configureAdapter (){
         m_listAdapter=new MyListAdapter(this,m_item,m_path,m_isRoot);
+        if (m_itemBackgroundColor != 0 && m_selectedItemBackgroundColor != 0) m_listAdapter.setItemBackgroundColor(m_itemBackgroundColor, m_selectedItemBackgroundColor);
         m_RootList.setAdapter(m_listAdapter);
+
         m_RootList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -158,6 +191,13 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
                 else
                 {
                     Toast.makeText(CustomFileExplorerActivity.this, "This is File", Toast.LENGTH_SHORT).show();
+                    if (m_listAdapter.m_selectedItem.contains(position) ) {
+                        m_listAdapter.m_selectedItem.clear();
+                    } else {
+                        m_listAdapter.m_selectedItem.clear();
+                        m_listAdapter.m_selectedItem.add(0, position);
+                    }
+                    m_listAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -175,7 +215,7 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Title");
+        builder.setTitle(m_inputNewFolderTitle);
 
         // Set up the input
         final EditText m_edtinput = new EditText(this);
@@ -189,8 +229,6 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
                 if(p_opt == 1)
                 {
                     File m_newPath=new File(m_curDir,m_text);
-                    Log.d("cur dir",m_curDir);
-                    Log.d("bwvm", "onClick: " + m_curDir);
                     if(!m_newPath.exists()) {
                         m_newPath.mkdirs();
                     }
@@ -231,18 +269,42 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_file_or_folder_picker, menu);
-        return super.onCreateOptionsMenu(menu);
+        menu.add(Menu.NONE,1,1, m_selectButtonTitle);
+        menu.add(Menu.NONE,2,2, m_newFolderButtonTitle);
+        menu.add(Menu.NONE,3,3,m_cancelButtonTitle);
+        MenuItem item = menu.getItem(0);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_new_folder){
+        if (id == 1){
+            String resultado;
+
+            resultado = m_listAdapter.m_selectedItem.size() == 0 ? m_curDir :
+                    m_path.get(m_listAdapter.m_selectedItem.get(0));
+
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra(RESPONSE_STRING_NAME,resultado);
+            setResult(RESULT_OK,returnIntent);
+            finish();
+        }
+
+        if (id == 2){
             createNewFolder();
         }
+
+        if (id == 3){
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra(RESPONSE_STRING_NAME,"");
+            setResult(RESULT_CANCELED,returnIntent);
+            finish();
+        }
+
+
         return super.onOptionsItemSelected(item);
     }
 }

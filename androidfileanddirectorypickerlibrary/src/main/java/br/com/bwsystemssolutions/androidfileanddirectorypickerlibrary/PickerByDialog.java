@@ -45,13 +45,16 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
     private String m_root = "";
     private Boolean m_isRoot=true;
 
-    private String m_title = "";
+    private String m_title = "Select a ...";
     private String m_subTilte = "";
     private int m_itemBackgroundColor;
     private int m_selectedItemBackgroundColor;
     private OnResponseListener m_onResponseListener;
     private int selectType = SELECT_TYPE_FOLDER;
-
+    private String m_selectButtonTitle = "Select";
+    private String m_newFolderButtonTitle = "New Folder";
+    private String m_cancelButtonTitle = "Cancel";
+    private String m_inputNewFolderTitle = "New folder name:";
 
     public PickerByDialog(Context context, String root){
         mContext = context;
@@ -72,16 +75,32 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
         m_subTilte = subTitle;
     }
 
+    public void setSelectButtonTitle(String selectButtonTitle) {
+        this.m_selectButtonTitle = selectButtonTitle;
+    }
+
+    public void setNewFolderButtonTitle(String newFolderButtonTitle) {
+        this.m_newFolderButtonTitle = newFolderButtonTitle;
+    }
+
+    public void setCancelButtonTitle(String cancelButtonTitle) {
+        this.m_cancelButtonTitle = cancelButtonTitle;
+    }
+
+    public void setInputNewFolderTitle(String inputNewFolderTitle) {
+        this.m_inputNewFolderTitle = inputNewFolderTitle;
+    }
+
     public void show(){
 
         AlertDialog.Builder dialogBuilder;
 
         dialogBuilder = mthemeResId > 0 ? new AlertDialog.Builder(mContext, mthemeResId) : new AlertDialog.Builder(mContext);
 
-        dialogBuilder.setPositiveButton("Selecionar", this);
-        dialogBuilder.setNegativeButton("Cancelar", this);
+        dialogBuilder.setPositiveButton(m_selectButtonTitle, this);
+        dialogBuilder.setNegativeButton(m_cancelButtonTitle, this);
         //dialogBuilder.setNeutralButton("Nova Pasta", this);
-        dialogBuilder.setNeutralButton("Nova Pasta", null);
+        dialogBuilder.setNeutralButton(m_newFolderButtonTitle, null);
 
         if (m_title.length()>0) dialogBuilder.setTitle(m_title);
 
@@ -183,8 +202,6 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
                     } else {
                         m_listAdapter.m_selectedItem.clear();
                         m_listAdapter.m_selectedItem.add(0, position);
-                        Log.d("bwvm", "onItemClick: m_item = " + m_item.get(position));
-                        Log.d("bwvm", "onItemClick: m_path = " + m_path.get(position));
                     }
                     m_listAdapter.notifyDataSetChanged();
                 }
@@ -247,10 +264,6 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
                 default:
         }
 
-
-
-
-
     }
 
     private void cancel(){
@@ -275,7 +288,7 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
     {
         Log.d("bwvm", "create: inicio do on create");
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("Title");
+        builder.setTitle(m_inputNewFolderTitle);
 
         // Set up the input
         final EditText m_edtinput = new EditText(mContext);
@@ -289,8 +302,6 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
                 if(p_opt == 1)
                 {
                     File m_newPath=new File(m_curDir,m_text);
-                    Log.d("cur dir",m_curDir);
-                    Log.d("bwvm", "onClick: " + m_curDir);
                     if(!m_newPath.exists()) {
                         m_newPath.mkdirs();
                     }
