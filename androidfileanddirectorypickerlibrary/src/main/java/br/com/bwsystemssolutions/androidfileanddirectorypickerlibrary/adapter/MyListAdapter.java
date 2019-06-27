@@ -11,12 +11,14 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary.CustomFileExplorerActivity;
 import br.com.bwsystemssolutions.androidfileanddirectorypickerlibrary.R;
 
 /**
@@ -61,6 +63,7 @@ public class MyListAdapter extends BaseAdapter {
     @Override
     public View getView(final int p_position, View p_convertView, ViewGroup p_parent)
     {
+
         View m_view = null;
         ViewHolder m_viewHolder = null;
         if (p_convertView == null)
@@ -72,7 +75,6 @@ public class MyListAdapter extends BaseAdapter {
             m_viewHolder.m_tvFileName = (TextView) m_view.findViewById(R.id.lr_tvFileName);
             m_viewHolder.m_tvDate = (TextView) m_view.findViewById(R.id.lr_tvdate);
             m_viewHolder.m_ivIcon = (ImageView) m_view.findViewById(R.id.lr_ivFileIcon);
-            m_viewHolder.m_cbCheck = (CheckBox) m_view.findViewById(R.id.lr_cbCheck);
             m_view.setTag(m_viewHolder);
         }
         else
@@ -82,26 +84,12 @@ public class MyListAdapter extends BaseAdapter {
         }
         if(!m_isRoot && p_position == 0)
         {
-            m_viewHolder.m_cbCheck.setVisibility(View.INVISIBLE);
+            //m_viewHolder.m_cbCheck.setVisibility(View.INVISIBLE);  was used when there was checkbox
         }
 
         m_viewHolder.m_tvFileName.setText(m_item.get(p_position));
         m_viewHolder.m_ivIcon.setImageResource(setFileImageType(new File(m_path.get(p_position))));
         m_viewHolder.m_tvDate.setText(getLastDate(p_position));
-        m_viewHolder.m_cbCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked)
-                {
-                    m_selectedItem.add(p_position);
-                }
-                else
-                {
-                    m_selectedItem.remove(m_selectedItem.indexOf(p_position));
-                }
-            }
-        });
 
         if (m_selectedItem.contains(p_position)){
             m_view.setBackgroundColor(m_selectedItemBackgroundColor);
@@ -114,7 +102,6 @@ public class MyListAdapter extends BaseAdapter {
 
     class ViewHolder
     {
-        CheckBox m_cbCheck;
         ImageView m_ivIcon;
         TextView m_tvFileName;
         TextView m_tvDate;
