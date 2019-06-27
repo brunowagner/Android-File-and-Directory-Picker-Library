@@ -69,6 +69,8 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
 
         m_root = getExternalFilesDir(null).getAbsolutePath();
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         init();
     }
 
@@ -298,6 +300,13 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
         }
 
         if (id == 3){
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra(RESPONSE_STRING_NAME,"");
+            setResult(RESULT_CANCELED,returnIntent);
+            finish();
+        }
+
+        if (id == android.R.id.home){
             Intent returnIntent = new Intent();
             returnIntent.putExtra(RESPONSE_STRING_NAME,"");
             setResult(RESULT_CANCELED,returnIntent);
