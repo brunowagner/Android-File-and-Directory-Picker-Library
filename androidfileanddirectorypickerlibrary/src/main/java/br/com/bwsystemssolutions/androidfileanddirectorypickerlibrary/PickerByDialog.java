@@ -12,6 +12,7 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +56,7 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
     private String m_newFolderButtonTitle = "New Folder";
     private String m_cancelButtonTitle = "Cancel";
     private String m_inputNewFolderTitle = "New folder name:";
+    private TextView m_curDirTextView;
 
     public PickerByDialog(Context context, String root){
         mContext = context;
@@ -108,11 +110,23 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
 
         View view = inflater.inflate(R.layout.list_row, null);
 
-        if (m_subTilte.length()>0) {
-            TextView textView = view.findViewById(R.id.tv_title);
-            textView.setVisibility(View.VISIBLE);
-            textView.setText(m_subTilte);
-        }
+//        if (m_subTilte.length()>0) {
+//            TextView textView = view.findViewById(R.id.tv_title);
+//            textView.setVisibility(View.VISIBLE);
+//            textView.setText(m_subTilte);
+//        }
+
+        m_curDirTextView = view.findViewById(R.id.tv_title);
+        m_curDirTextView.setVisibility(View.VISIBLE);
+
+        // this force scrollbar go to full right
+        m_curDirTextView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                ((HorizontalScrollView) v.getParent()).fullScroll(View.FOCUS_RIGHT);
+            }
+        });
+
 
         m_listAdapter=new MyListAdapter(mContext,m_item,m_path, m_isRoot);
 
@@ -149,9 +163,11 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
             m_path.add(m_file.getParent());
             m_isRoot=false;
         }
-        m_curDir=p_rootPath;
-        //sorting file list in alphabetical order
+        m_curDirTextView.setText(m_file.getAbsolutePath());
 
+        m_curDir=p_rootPath;
+
+        //sorting file list in alphabetical order
         if (m_filesArray != null) {
             Arrays.sort(m_filesArray);
 
@@ -214,7 +230,7 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
 
         int pressedButtom = which;
 
-        switch (pressedButtom){
+        switch (pressedButtom) {
             case DialogInterface.BUTTON_POSITIVE:
                 select();
                 dialog.cancel();
@@ -225,13 +241,9 @@ public class PickerByDialog implements DialogInterface.OnClickListener, DialogIn
                 cancel();
                 dialog.cancel();
                 dialog.dismiss();
-//                break;
-//
-//            case DialogInterface.BUTTON_NEUTRAL:
-//                newFolder();
-//                dialog.dismiss();
+
+            default:break;
         }
-        Log.d("bwvm", "onClick:  final do on click");
     }
 
     private void select(){

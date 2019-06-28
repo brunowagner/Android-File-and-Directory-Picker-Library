@@ -5,14 +5,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -59,6 +66,9 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     private String m_newFolderButtonTitle = "New Folder";
     private String m_cancelButtonTitle = "Cancel";
     private String m_inputNewFolderTitle = "New folder name:";
+    private TextView m_curDirTextView;
+    //private HorizontalScrollView titleScroll;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +76,20 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
         setContentView(R.layout.list_row);
 
         m_RootList = findViewById(R.id.lv_lvListRoot);
+        m_curDirTextView = findViewById(R.id.tv_title);
+        m_curDirTextView.setVisibility(View.VISIBLE);
+
+        // this force scrollbar go to full right
+        m_curDirTextView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                ((HorizontalScrollView) v.getParent()).fullScroll(View.FOCUS_RIGHT);
+            }
+        });
 
         m_root = getExternalFilesDir(null).getAbsolutePath();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         init();
     }
@@ -143,10 +163,12 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
             m_item.add("../");
             m_path.add(m_file.getParent());
             m_isRoot=false;
-        }
-        m_curDir=p_rootPath;
-        //sorting file list in alphabetical order
 
+        }
+        m_curDirTextView.setText(m_file.getAbsolutePath());
+        m_curDir=p_rootPath;
+
+        //sorting file list in alphabetical order
         if (m_filesArray != null) {
             Arrays.sort(m_filesArray);
 
@@ -176,6 +198,7 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
     }
 
     private void configureAdapter (){
+
         m_listAdapter=new MyListAdapter(this,m_item,m_path,m_isRoot);
         if (m_itemBackgroundColor != 0 && m_selectedItemBackgroundColor != 0) m_listAdapter.setItemBackgroundColor(m_itemBackgroundColor, m_selectedItemBackgroundColor);
         m_RootList.setAdapter(m_listAdapter);
@@ -312,8 +335,6 @@ public class CustomFileExplorerActivity extends AppCompatActivity {
             setResult(RESULT_CANCELED,returnIntent);
             finish();
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 }
